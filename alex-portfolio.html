@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex — ECE & Energy Markets</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f7f6f3;
+  --white: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --border: #e2e0da;
+  --accent: #1d4ed8;
+  --accent-light: #eff3ff;
+  --tag-bg: #eeecea;
+  --font: 'IBM Plex Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.shell {
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── Header ── */
+header {
+  padding: 3.5rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+}
+.header-left h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+.header-left .subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+.header-right {
+  display: flex;
+  gap: 1.25rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+.header-link {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: color 0.15s;
+}
+.header-link:hover { color: var(--accent); }
+.header-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ── Nav ── */
+nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-btn {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.9rem 1.25rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Sections ── */
+.section { display: none; padding: 3rem 0 4rem; }
+.section.active { display: block; }
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+/* ── About ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 4rem;
+  align-items: start;
+}
+.about-body p {
+  color: var(--text);
+  margin-bottom: 1.1rem;
+  line-height: 1.75;
+  font-size: 0.95rem;
+}
+.about-body p:last-child { margin-bottom: 0; }
+.about-sidebar {}
+.info-block {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.info-val {
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.75rem; }
+.tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  background: var(--tag-bg);
+  color: var(--muted);
+  border-radius: 3px;
+}
+.tag.blue {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ── Projects ── */
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.project-card {
+  background: var(--white);
+  padding: 1.5rem 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  transition: background 0.15s;
+}
+.project-card:hover { background: #fafaf8; }
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.project-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.project-status {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.status-done {
+  background: #ecfdf5;
+  color: #059669;
+}
+.status-wip {
+  background: #fffbeb;
+  color: #d97706;
+}
+.project-desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.65;
+  max-width: 540px;
+}
+.project-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 0.75rem; }
+.project-tag {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  background: var(--tag-bg);
+  color: var(--muted);
+  border-radius: 3px;
+}
+.project-meta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Education ── */
+.edu-item {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.edu-item:first-child { padding-top: 0; }
+.edu-item:last-child { border-bottom: none; }
+.edu-year {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-top: 3px;
+}
+.edu-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.01em;
+}
+.edu-place {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.edu-desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ── Skills section ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 2rem;
+}
+.skill-group {
+  background: var(--white);
+  padding: 1.25rem 1.5rem;
+}
+.skill-group-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.skill-list {
+  list-style: none;
+  font-size: 0.85rem;
+  line-height: 2;
+}
+.skill-list li::before {
+  content: '—';
+  color: var(--border);
+  margin-right: 0.5rem;
+  font-family: var(--mono);
+}
+
+/* ── Contact ── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 2rem;
+}
+.contact-item {
+  background: var(--white);
+  padding: 1.5rem 1.75rem;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: background 0.15s;
+}
+.contact-item:hover { background: var(--accent-light); }
+.contact-item:hover .contact-label { color: var(--accent); }
+.contact-icon {
+  width: 36px; height: 36px;
+  background: var(--tag-bg);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.contact-icon svg { width: 16px; height: 16px; }
+.contact-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+  transition: color 0.15s;
+}
+.contact-value {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="header-left">
+      <h1>Alex</h1>
+      <div class="subtitle">ECE Student · Aristotle University of Thessaloniki</div>
+    </div>
+    <div class="header-right">
+      <a href="mailto:alex@ece.auth.gr" class="header-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        alex@ece.auth.gr
+      </a>
+      <a href="https://linkedin.com/in/alex" class="header-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/alex" class="header-link" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="show('about', this)">About</button>
+    <button class="nav-btn" onclick="show('projects', this)">Projects</button>
+    <button class="nav-btn" onclick="show('education', this)">Education</button>
+    <button class="nav-btn" onclick="show('skills', this)">Skills</button>
+    <button class="nav-btn" onclick="show('contact', this)">Contact</button>
+  </nav>
+
+  <!-- ABOUT -->
+  <div class="section active" id="about">
+    <div class="section-label">Overview</div>
+    <div class="about-grid">
+      <div class="about-body">
+        <p>I am an Electrical and Computer Engineering student at Aristotle University of Thessaloniki, with a strong focus on energy markets — specifically power and gas.</p>
+        <p>My interest sits at the intersection of engineering and economics: understanding how electricity and natural gas are priced, traded, and regulated across European and global markets. I follow developments in wholesale power trading, grid operations, LNG flows, and EU energy policy closely.</p>
+        <p>I am looking to apply my technical background to roles in energy trading, market analysis, or regulation — where rigorous quantitative thinking meets real-world infrastructure.</p>
+        <div class="tags">
+          <span class="tag blue">Energy Markets</span>
+          <span class="tag blue">Power Systems</span>
+          <span class="tag blue">Gas Markets</span>
+          <span class="tag">EU Energy Policy</span>
+          <span class="tag">Quantitative Analysis</span>
+          <span class="tag">Python</span>
+          <span class="tag">MATLAB</span>
+        </div>
+      </div>
+      <div class="about-sidebar">
+        <div class="info-block">
+          <div class="info-row">
+            <span class="info-key">Degree</span>
+            <span class="info-val">B.Eng ECE</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">University</span>
+            <span class="info-val">AUTh</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Location</span>
+            <span class="info-val">Thessaloniki, GR</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Focus</span>
+            <span class="info-val">Energy Markets</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Status</span>
+            <span class="info-val">Open to opportunities</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section" id="projects">
+    <div class="section-label">Coursework & Projects</div>
+    <div class="projects-list">
+
+      <div class="project-card">
+        <div>
+          <div class="project-header">
+            <div class="project-title">Electricity Price Forecasting Model</div>
+            <span class="project-status status-done">Completed</span>
+          </div>
+          <div class="project-desc">Built a short-term day-ahead electricity price forecasting model for the Greek energy market using historical ENTSO-E data. Implemented regression and time-series methods to predict hourly prices, evaluating accuracy against actual market outcomes.</div>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">pandas</span>
+            <span class="project-tag">scikit-learn</span>
+            <span class="project-tag">ENTSO-E API</span>
+            <span class="project-tag">Time Series</span>
+          </div>
+        </div>
+        <div class="project-meta">2024<br>Coursework</div>
+      </div>
+
+      <div class="project-card">
+        <div>
+          <div class="project-header">
+            <div class="project-title">Power Flow Analysis — IEEE 14-Bus System</div>
+            <span class="project-status status-done">Completed</span>
+          </div>
+          <div class="project-desc">Performed load flow analysis on the IEEE 14-bus test network using Newton-Raphson and Gauss-Seidel methods. Analysed voltage profiles, active/reactive power distribution, and contingency scenarios for N-1 security assessment.</div>
+          <div class="project-tags">
+            <span class="project-tag">MATLAB</span>
+            <span class="project-tag">Power Systems</span>
+            <span class="project-tag">Load Flow</span>
+            <span class="project-tag">Newton-Raphson</span>
+          </div>
+        </div>
+        <div class="project-meta">2024<br>Lab Course</div>
+      </div>
+
+      <div class="project-card">
+        <div>
+          <div class="project-header">
+            <div class="project-title">European Gas Market Analysis — Post-2022 Dynamics</div>
+            <span class="project-status status-done">Completed</span>
+          </div>
+          <div class="project-desc">Research paper examining the structural changes in European gas markets following the 2022 energy crisis. Covered LNG import surges, TTF price volatility, storage policy responses, and the accelerated shift away from pipeline dependency.</div>
+          <div class="project-tags">
+            <span class="project-tag">Research</span>
+            <span class="project-tag">Gas Markets</span>
+            <span class="project-tag">LNG</span>
+            <span class="project-tag">EU Energy Policy</span>
+          </div>
+        </div>
+        <div class="project-meta">2023<br>Seminar Paper</div>
+      </div>
+
+      <div class="project-card">
+        <div>
+          <div class="project-header">
+            <div class="project-title">Optimal Dispatch of a Renewable Energy Portfolio</div>
+            <span class="project-status status-wip">In progress</span>
+          </div>
+          <div class="project-desc">Developing an optimisation model for the economic dispatch of a mixed wind/solar/storage portfolio in a day-ahead market. Formulated as a linear programming problem minimising cost subject to grid and battery constraints.</div>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">PuLP</span>
+            <span class="project-tag">Optimisation</span>
+            <span class="project-tag">Renewables</span>
+            <span class="project-tag">Energy Storage</span>
+          </div>
+        </div>
+        <div class="project-meta">2025<br>Thesis prep</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="section" id="education">
+    <div class="section-label">Education</div>
+
+    <div class="edu-item">
+      <div class="edu-year">2021 — present</div>
+      <div>
+        <div class="edu-title">B.Eng. Electrical & Computer Engineering</div>
+        <div class="edu-place">Aristotle University of Thessaloniki, Greece</div>
+        <div class="edu-desc">Five-year integrated engineering degree. Core curriculum covers power systems, circuit theory, control, signal processing, computer architecture, and software engineering. Elective focus on energy economics, power markets, and optimisation methods.</div>
+      </div>
+    </div>
+
+    <div class="edu-item">
+      <div class="edu-year">Relevant<br>coursework</div>
+      <div>
+        <div class="tags" style="margin-top:0">
+          <span class="tag">Power Systems Analysis</span>
+          <span class="tag">Energy Economics</span>
+          <span class="tag">Electricity Markets</span>
+          <span class="tag">Control Systems</span>
+          <span class="tag">Signal Processing</span>
+          <span class="tag">Numerical Methods</span>
+          <span class="tag">Probability & Statistics</span>
+          <span class="tag">Optimisation</span>
+          <span class="tag">Embedded Systems</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section" id="skills">
+    <div class="section-label">Technical Skills</div>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-label">Programming</div>
+        <ul class="skill-list">
+          <li>Python</li>
+          <li>MATLAB</li>
+          <li>SQL</li>
+          <li>LaTeX</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Energy & Power</div>
+        <ul class="skill-list">
+          <li>Power flow analysis</li>
+          <li>Day-ahead markets</li>
+          <li>Grid operations</li>
+          <li>ENTSO-E data</li>
+        </ul>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-label">Methods & Tools</div>
+        <ul class="skill-list">
+          <li>Time-series modelling</li>
+          <li>Linear programming</li>
+          <li>Statistical analysis</li>
+          <li>pandas / NumPy</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section" id="contact">
+    <div class="section-label">Get in touch</div>
+    <p style="font-size:0.9rem; color:var(--muted); max-width:480px; margin-bottom:0">I am open to internship opportunities, research collaborations, and conversations about energy markets. Feel free to reach out.</p>
+    <div class="contact-grid">
+      <a href="mailto:alex@ece.auth.gr" class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">alex@ece.auth.gr</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/alex" target="_blank" class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-value">linkedin.com/in/alex</div>
+        </div>
+      </a>
+      <a href="https://github.com/alex" target="_blank" class="contact-item">
+        <div class="contact-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">GitHub</div>
+          <div class="contact-value">github.com/alex</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <span>Alex — ECE, Aristotle University of Thessaloniki</span>
+    <span>Thessaloniki, Greece</span>
+  </footer>
+
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
